@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <h2>Apply for Leave</h2>
+
+    <form method="POST" style="margin-top: 30px;">
+        <div class="form-group">
+            <label for="leave_type">Leave Type *</label>
+            <select id="leave_type" name="leave_type" required>
+                <option value="">Select leave type</option>
+                <option value="Sick Leave"> Sick Leave</option>
+                <option value="Casual Leave"> Casual Leave</option>
+                <option value="Annual Leave"> Annual Leave</option>
+                <option value="Emergency Leave"> Emergency Leave</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="start_date">Start Date *</label>
+            <input type="date" id="start_date" name="start_date" required>
+        </div>
+
+        <div class="form-group">
+            <label for="end_date">End Date *</label>
+            <input type="date" id="end_date" name="end_date" required>
+        </div>
+
+        <div class="form-group">
+            <label for="reason">Reason</label>
+            <textarea id="reason" name="reason" rows="4"
+                      placeholder="Please provide reason for leave (optional)"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-warning">Cancel</a>
+        </div>
+    </form>
+
+    <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+        <h4 style="margin-bottom: 10px;"> Leave Guidelines:</h4>
+        <ul style="margin-left: 20px; font-size: 13px; color: #666;">
+            <li>Sick Leave: Maximum 12 days per year</li>
+            <li>Casual Leave: Maximum 15 days per year</li>
+            <li>Annual Leave: Maximum 20 days per year</li>
+            <li>Submit request at least 3 days in advance</li>
+            <li>Emergency leave requires immediate manager approval</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start_date').min = today;
+    document.getElementById('end_date').min = today;
+
+    // Ensure end date is not before start date
+    document.getElementById('start_date').addEventListener('change', function() {
+        document.getElementById('end_date').min = this.value;
+    });
+</script>
+{% endblock %}

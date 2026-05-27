@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Dashboard</h2>
+
+{% if role == 'employee' %}
+<div style="background: #e3f2fd; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+    <p> Welcome! You can submit leave requests from the "Apply Leave" menu.</p>
+</div>
+{% else %}
+<div style="background: #fff3e0; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+    <p> <strong>Manager View:</strong> Review pending leave requests below and approve/reject.</p>
+</div>
+{% endif %}
+
+<h3>Leave Requests</h3>
+
+{% if leaves %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            {% if role == 'manager' %}<th>Employee</th>{% endif %}
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Type</th>
+            <th>Reason</th>
+            <th>Status</th>
+            {% if role == 'manager' %}<th>Actions</th>{% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for leave in leaves %}
+        <tr>
+            <td>{{ leave.id }}</td>
+            {% if role == 'manager' %}
+            <td>{{ leave.full_name }}</td>
+            {% endif %}
+            <td>{{ leave.start_date }}</td>
+            <td>{{ leave.end_date }}</td>
+            <td>{{ leave.leave_type }}</td>
+            <td>{{ leave.reason or '-' }}</td>
+            <td>
+                <span class="status-badge status-{{ leave.status }}">
+                    {{ leave.status|upper }}
+                </span>
+            </td>
+            {% if role == 'manager' and leave.status == 'pending' %}
+            <td>
+                <a href="{{ url_for('approve_leave', leave_id=leave.id) }}"
+                   class="btn btn-success"
+                   style="margin-right: 5px; padding: 5px 10px; font-size: 12px;"
+                   onclick="return confirm('Approve this leave request?')">
+                   ✓ Approve
+                </a>
+                <a href="{{ url_for('reject_leave', leave_id=leave.id) }}"
+                   class="btn btn-danger"
+                   style="padding: 5px 10px; font-size: 12px;"
+                   onclick="return confirm('Reject this leave request?')">
+                   ✗ Reject
+                </a>
+            </td>
+            {% elif role == 'manager' %}
+            <td>-</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div style="text-align: center; padding: 50px; background: #f8f9fa; border-radius: 5px;">
+    <p> No leave requests found.</p>
+    {% if role == 'employee' %}
+    <a href="{{ url_for('apply_leave') }}" class="btn btn-primary" style="margin-top: 15px;">
+        Apply for Leave
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
